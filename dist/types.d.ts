@@ -13,9 +13,24 @@ export interface AuthUser {
     email: string;
     name: string | null;
 }
+export interface ProductRole {
+    productId: string;
+    slug: string;
+    name: string;
+}
+export interface WorkspaceMembership {
+    workspaceId: string;
+    workspaceSlug: string;
+    workspaceName: string;
+    role: string;
+    status: string;
+    productRoles: ProductRole[];
+}
 export interface AuthSession {
     user: AuthUser;
+    memberships: WorkspaceMembership[];
     activeWorkspaceId?: string | null;
+    role?: string | null;
     isImpersonating: boolean;
 }
 export interface HqAuthzDecision {

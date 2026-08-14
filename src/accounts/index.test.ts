@@ -113,4 +113,41 @@ describe('getSession', () => {
 
     expect(session?.activeWorkspaceId).toBe('ws_active');
   });
+
+  it('parses memberships and resolves the active workspace role', async () => {
+    stubFetch({
+      id: 'user_1',
+      email: 'a@b.fi',
+      name: null,
+      memberships: [
+        {
+          workspaceId: 'ws_1',
+          workspaceSlug: 'first',
+          workspaceName: 'First',
+          role: 'owner',
+          status: 'active',
+          productRoles: [{ productId: 'p1', slug: 'stageflow', name: 'Stageflow' }],
+        },
+        {
+          workspaceId: 'ws_2',
+          workspaceSlug: 'second',
+          workspaceName: 'Second',
+          role: 'member',
+          status: 'active',
+          productRoles: [],
+        },
+      ],
+    });
+
+    const session = await getSession({
+      accountsApiUrl: 'https://accounts.example.com',
+      serviceJwtProvider: async () => 'service-jwt',
+      cookieStore: makeStore({ 'mk-session': 'user-jwt' }),
+    });
+
+    expect(session?.memberships).toHaveLength(2);
+    expect(session?.activeWorkspaceId).toBe('ws_1');
+    expect(session?.role).toBe('owner');
+    expect(session?.memberships[0]?.productRoles[0]?.slug).toBe('stageflow');
+  });
 });

@@ -1,6 +1,10 @@
 import { SignJWT, importPKCS8 } from 'jose';
 
-import type { AuthSession, ImpersonationContext } from '../types';
+import type {
+  AuthSession,
+  ImpersonationContext,
+  WorkspaceMembership,
+} from '../types';
 import { getImpersonationFromCookies, type CookieStore } from '../impersonation';
 
 export type { CookieStore } from '../impersonation';
@@ -24,6 +28,7 @@ interface MeResponse {
   id: string;
   email: string;
   name: string | null;
+  memberships?: WorkspaceMembership[];
 }
 
 export async function defaultServiceJwtProvider(): Promise<string> {
@@ -59,7 +64,7 @@ export async function getSession(
 
   const activeWorkspaceCookieName =
     options.activeWorkspaceCookieName ?? ACTIVE_WORKSPACE_COOKIE;
-  const activeWorkspaceId = store.get(activeWorkspaceCookieName)?.value ?? null;
+  const activeWorkspaceCookieValue = store.get(activeWorkspaceCookieName)?.value ?? null;
 
   const impersonation: ImpersonationContext | null =
     await getImpersonationFromCookies(store);
@@ -77,9 +82,26 @@ export async function getSession(
     if (!res.ok) return null;
 
     const me = (await res.json()) as MeResponse;
+    const memberships = (me.memberships ?? []).filter(
+      (m) => m.status === 'active',
+    );
+
+    const activeWorkspaceId =
+      impersonation?.workspaceId ??
+      activeWorkspaceCookieValue ??
+      memberships[0]?.workspaceId ??
+      null;
+
+    const activeMembership =
+      memberships.find((m) => m.workspaceId === activeWorkspaceId) ??
+      memberships[0] ??
+      null;
+
     return {
       user: { id: me.id, email: me.email, name: me.name ?? null },
-      activeWorkspaceId: impersonation?.workspaceId ?? activeWorkspaceId,
+      memberships,
+      activeWorkspaceId,
+      role: activeMembership?.role ?? null,
       isImpersonating: impersonation !== null,
     };
   } catch {

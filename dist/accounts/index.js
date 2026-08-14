@@ -29,7 +29,7 @@ export async function getSession(options = {}) {
     const accountsApiUrl = (options.accountsApiUrl ?? process.env.ACCOUNTS_API_URL ?? '').replace(/\/+$/, '');
     const serviceJwtProvider = options.serviceJwtProvider ?? defaultServiceJwtProvider;
     const activeWorkspaceCookieName = options.activeWorkspaceCookieName ?? ACTIVE_WORKSPACE_COOKIE;
-    const activeWorkspaceId = store.get(activeWorkspaceCookieName)?.value ?? null;
+    const activeWorkspaceCookieValue = store.get(activeWorkspaceCookieName)?.value ?? null;
     const impersonation = await getImpersonationFromCookies(store);
     try {
         const serviceToken = await serviceJwtProvider();
@@ -43,9 +43,19 @@ export async function getSession(options = {}) {
         if (!res.ok)
             return null;
         const me = (await res.json());
+        const memberships = (me.memberships ?? []).filter((m) => m.status === 'active');
+        const activeWorkspaceId = impersonation?.workspaceId ??
+            activeWorkspaceCookieValue ??
+            memberships[0]?.workspaceId ??
+            null;
+        const activeMembership = memberships.find((m) => m.workspaceId === activeWorkspaceId) ??
+            memberships[0] ??
+            null;
         return {
             user: { id: me.id, email: me.email, name: me.name ?? null },
-            activeWorkspaceId: impersonation?.workspaceId ?? activeWorkspaceId,
+            memberships,
+            activeWorkspaceId,
+            role: activeMembership?.role ?? null,
             isImpersonating: impersonation !== null,
         };
     }
