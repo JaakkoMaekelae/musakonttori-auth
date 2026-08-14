@@ -11,15 +11,32 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./hq-authz": { "types": "./dist/hq-authz/index.d.ts", "default": "./dist/hq-authz/index.js" },
-    "./impersonation": { "types": "./dist/impersonation/index.d.ts", "default": "./dist/impersonation/index.js" },
-    "./accounts": { "types": "./dist/accounts/index.d.ts", "default": "./dist/accounts/index.js" },
-    "./api-key": { "types": "./dist/api-key/index.d.ts", "default": "./dist/api-key/index.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./hq-authz": {
+      "types": "./dist/hq-authz/index.d.ts",
+      "default": "./dist/hq-authz/index.js"
+    },
+    "./impersonation": {
+      "types": "./dist/impersonation/index.d.ts",
+      "default": "./dist/impersonation/index.js"
+    },
+    "./accounts": {
+      "types": "./dist/accounts/index.d.ts",
+      "default": "./dist/accounts/index.js"
+    },
+    "./api-key": {
+      "types": "./dist/api-key/index.d.ts",
+      "default": "./dist/api-key/index.js"
+    }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint ."
@@ -30,6 +47,7 @@
   "devDependencies": {
     "@types/node": "^26.1.1",
     "eslint": "^9.0.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.0.0",
     "vitest": "^2.1.0"

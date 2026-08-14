@@ -1,17 +1,19 @@
-import type { ApiKeyAuthResult } from '../types';
-export interface ApiKeyRecord {
+import { A as ApiKeyAuthResult } from '../types-VQzFiU4K.js';
+
+interface ApiKeyRecord {
     keyHash: string;
     tenantId?: string;
     organizationId?: string;
     keyType?: string;
     scopes: string[];
 }
-export type ApiKeyLookup = (prefix: string) => Promise<ApiKeyRecord[] | null | undefined>;
-export interface VerifyApiKeyOptions {
+type ApiKeyLookup = (prefix: string) => Promise<ApiKeyRecord[] | null | undefined>;
+interface VerifyApiKeyOptions {
     hash?: string;
     prefixLength?: number;
     lookup: ApiKeyLookup;
 }
-export declare function hashApiKey(key: string, hash?: string): string;
-export declare function verifyApiKey(key: string, options: VerifyApiKeyOptions): Promise<ApiKeyAuthResult>;
-//# sourceMappingURL=index.d.ts.map
+declare function hashApiKey(key: string, hash?: string): string;
+declare function verifyApiKey(key: string, options: VerifyApiKeyOptions): Promise<ApiKeyAuthResult>;
+
+export { type ApiKeyLookup, type ApiKeyRecord, type VerifyApiKeyOptions, hashApiKey, verifyApiKey };

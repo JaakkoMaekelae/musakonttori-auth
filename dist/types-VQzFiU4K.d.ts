@@ -1,24 +1,24 @@
-export type ImpersonationMode = 'READ_ONLY' | 'FULL' | 'BREAK_GLASS';
-export interface ImpersonationClaims {
+type ImpersonationMode = 'READ_ONLY' | 'FULL' | 'BREAK_GLASS';
+interface ImpersonationClaims {
     workspaceId: string;
     adminUserId: string;
     adminEmail: string;
     mode: ImpersonationMode;
 }
-export interface ImpersonationContext extends ImpersonationClaims {
+interface ImpersonationContext extends ImpersonationClaims {
     isImpersonating: true;
 }
-export interface AuthUser {
+interface AuthUser {
     id: string;
     email: string;
     name: string | null;
 }
-export interface ProductRole {
+interface ProductRole {
     productId: string;
     slug: string;
     name: string;
 }
-export interface WorkspaceMembership {
+interface WorkspaceMembership {
     workspaceId: string;
     workspaceSlug: string;
     workspaceName: string;
@@ -26,19 +26,19 @@ export interface WorkspaceMembership {
     status: string;
     productRoles: ProductRole[];
 }
-export interface AuthSession {
+interface AuthSession {
     user: AuthUser;
     memberships: WorkspaceMembership[];
     activeWorkspaceId?: string | null;
     role?: string | null;
     isImpersonating: boolean;
 }
-export interface HqAuthzDecision {
+interface HqAuthzDecision {
     allowed: boolean;
     permissions: string[];
     reason?: string;
 }
-export interface ApiKeyAuthResult {
+interface ApiKeyAuthResult {
     valid: boolean;
     tenantId?: string;
     organizationId?: string;
@@ -46,4 +46,5 @@ export interface ApiKeyAuthResult {
     scopes: string[];
     reason?: string;
 }
-//# sourceMappingURL=types.d.ts.map
+
+export type { ApiKeyAuthResult as A, HqAuthzDecision as H, ImpersonationClaims as I, AuthSession as a, AuthUser as b, ImpersonationContext as c, ImpersonationMode as d };

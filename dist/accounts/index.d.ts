@@ -1,14 +1,15 @@
-import type { AuthSession } from '../types';
-import { type CookieStore } from '../impersonation';
-export type { CookieStore } from '../impersonation';
-export type ServiceJwtProvider = () => Promise<string> | string;
-export interface GetSessionOptions {
+import { a as AuthSession } from '../types-VQzFiU4K.js';
+import { CookieStore } from '../impersonation/index.js';
+
+type ServiceJwtProvider = () => Promise<string> | string;
+interface GetSessionOptions {
     cookieName?: string;
     activeWorkspaceCookieName?: string;
     accountsApiUrl?: string;
     serviceJwtProvider?: ServiceJwtProvider;
     cookieStore?: CookieStore;
 }
-export declare function defaultServiceJwtProvider(): Promise<string>;
-export declare function getSession(options?: GetSessionOptions): Promise<AuthSession | null>;
-//# sourceMappingURL=index.d.ts.map
+declare function defaultServiceJwtProvider(): Promise<string>;
+declare function getSession(options?: GetSessionOptions): Promise<AuthSession | null>;
+
+export { CookieStore, type GetSessionOptions, type ServiceJwtProvider, defaultServiceJwtProvider, getSession };
