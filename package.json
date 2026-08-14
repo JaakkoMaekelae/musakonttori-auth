@@ -1,0 +1,35 @@
+{
+  "name": "@musakonttori/auth",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.18.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "description": "Shared auth for the Musakonttori product family — HQ authz, impersonation, accounts session, API-key verification",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./hq-authz": "./src/hq-authz/index.ts",
+    "./impersonation": "./src/impersonation/index.ts",
+    "./accounts": "./src/accounts/index.ts",
+    "./api-key": "./src/api-key/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "jose": "^6.2.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "eslint": "^9.0.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^2.1.0"
+  }
+}
