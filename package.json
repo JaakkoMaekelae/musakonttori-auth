@@ -8,16 +8,18 @@
     "node": ">=24"
   },
   "description": "Shared auth for the Musakonttori product family — HQ authz, impersonation, accounts session, API-key verification",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./hq-authz": "./src/hq-authz/index.ts",
-    "./impersonation": "./src/impersonation/index.ts",
-    "./accounts": "./src/accounts/index.ts",
-    "./api-key": "./src/api-key/index.ts"
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./hq-authz": { "types": "./dist/hq-authz/index.d.ts", "default": "./dist/hq-authz/index.js" },
+    "./impersonation": { "types": "./dist/impersonation/index.d.ts", "default": "./dist/impersonation/index.js" },
+    "./accounts": { "types": "./dist/accounts/index.d.ts", "default": "./dist/accounts/index.js" },
+    "./api-key": { "types": "./dist/api-key/index.d.ts", "default": "./dist/api-key/index.js" }
   },
+  "files": ["dist"],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint ."

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/hq-authz/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,iBAAiB,EAAE,MAAM,mBAAmB,CAAC;AACpE,YAAY,EAAE,iBAAiB,EAAE,MAAM,mBAAmB,CAAC;AAC3D,OAAO,EACL,gBAAgB,EAChB,qBAAqB,EACrB,uBAAuB,EACvB,kBAAkB,EAClB,eAAe,GAChB,MAAM,qBAAqB,CAAC;AAC7B,YAAY,EAAE,cAAc,EAAE,MAAM,qBAAqB,CAAC"}
