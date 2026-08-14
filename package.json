@@ -30,6 +30,10 @@
     "./api-key": {
       "types": "./dist/api-key/index.d.ts",
       "default": "./dist/api-key/index.js"
+    },
+    "./admin": {
+      "types": "./dist/admin/index.d.ts",
+      "default": "./dist/admin/index.js"
     }
   },
   "files": [

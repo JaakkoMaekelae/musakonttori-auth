@@ -7,6 +7,7 @@ export default defineConfig({
     'impersonation/index': 'src/impersonation/index.ts',
     'accounts/index': 'src/accounts/index.ts',
     'api-key/index': 'src/api-key/index.ts',
+    'admin/index': 'src/admin/index.ts',
   },
   format: ['esm'],
   dts: true,

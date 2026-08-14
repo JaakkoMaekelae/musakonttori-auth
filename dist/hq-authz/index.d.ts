@@ -1,14 +1,5 @@
-import { H as HqAuthzDecision } from '../types-VQzFiU4K.js';
-
-interface CheckHqAuthzInput {
-    clerkUserId: string;
-    email?: string | null;
-    feature: string;
-    action?: string;
-    productSlug?: string;
-}
-declare function getHqClientSecret(clientId: string): string | undefined;
-declare function checkHqAuthz(req: CheckHqAuthzInput): Promise<HqAuthzDecision>;
+export { C as CheckHqAuthzInput, c as checkHqAuthz, g as getHqClientSecret } from '../hq-authz-client-XmzSD3Yw.js';
+import '../types-VQzFiU4K.js';
 
 declare const HQ_AUTHZ_REQUEST_PATH = "/api/internal/authz/check";
 declare const HQ_AUTHZ_SIGNATURE_PATH = "/internal/authz/check";
@@ -33,4 +24,4 @@ declare function signHqAuthzRequest({ method, path, timestamp, nonce, body, clie
     clientSecret: string;
 }): string;
 
-export { type CheckHqAuthzInput, HQ_AUTHZ_REQUEST_PATH, HQ_AUTHZ_SIGNATURE_PATH, type HqAuthzRequest, buildHqAuthzBody, checkHqAuthz, getHqClientSecret, signHqAuthzRequest, splitPermission };
+export { HQ_AUTHZ_REQUEST_PATH, HQ_AUTHZ_SIGNATURE_PATH, type HqAuthzRequest, buildHqAuthzBody, signHqAuthzRequest, splitPermission };

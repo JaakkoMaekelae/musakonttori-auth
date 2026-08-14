@@ -17,7 +17,7 @@ async function signImpersonationToken(input) {
     admin_sub: input.adminUserId,
     admin_email: input.adminEmail,
     mode: input.mode
-  }).setProtectedHeader({ alg: "HS256" }).setSubject(input.workspaceId).setIssuer(ISSUER).setAudience(AUDIENCE).setIssuedAt().setExpirationTime(`${TTL_SECONDS}s`).sign(encodeSecret(input.secret));
+  }).setProtectedHeader({ alg: "HS256" }).setSubject(input.workspaceId).setIssuer(ISSUER).setAudience(AUDIENCE).setIssuedAt().setExpirationTime(`${input.ttlSeconds ?? TTL_SECONDS}s`).sign(encodeSecret(input.secret));
 }
 async function verifyImpersonationToken(token, secret) {
   try {
@@ -88,4 +88,4 @@ export {
   getImpersonationFromCookies,
   clearImpersonationCookies
 };
-//# sourceMappingURL=chunk-L7KODHXR.js.map
+//# sourceMappingURL=chunk-QAWPRIVS.js.map

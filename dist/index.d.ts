@@ -1,4 +1,5 @@
-export { CheckHqAuthzInput, HQ_AUTHZ_REQUEST_PATH, HQ_AUTHZ_SIGNATURE_PATH, HqAuthzRequest, buildHqAuthzBody, checkHqAuthz, getHqClientSecret, signHqAuthzRequest, splitPermission } from './hq-authz/index.js';
+export { C as CheckHqAuthzInput, c as checkHqAuthz, g as getHqClientSecret } from './hq-authz-client-XmzSD3Yw.js';
+export { HQ_AUTHZ_REQUEST_PATH, HQ_AUTHZ_SIGNATURE_PATH, HqAuthzRequest, buildHqAuthzBody, signHqAuthzRequest, splitPermission } from './hq-authz/index.js';
 export { CookieOptions, CookieStore, IMPERSONATION_COOKIE, IMPERSONATION_MODES, IMPERSONATION_MODE_COOKIE, IMPERSONATION_TARGET_COOKIE, IMPERSONATION_TARGET_EMAIL_COOKIE, SignImpersonationTokenInput, clearImpersonationCookies, getImpersonationFromCookies, setImpersonationCookies, signImpersonationToken, verifyImpersonationToken } from './impersonation/index.js';
 export { GetSessionOptions, ServiceJwtProvider, defaultServiceJwtProvider, getSession } from './accounts/index.js';
 export { ApiKeyLookup, ApiKeyRecord, VerifyApiKeyOptions, hashApiKey, verifyApiKey } from './api-key/index.js';

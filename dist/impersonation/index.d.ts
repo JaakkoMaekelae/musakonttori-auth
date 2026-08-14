@@ -25,6 +25,7 @@ interface SignImpersonationTokenInput {
     adminEmail: string;
     mode: ImpersonationMode;
     secret: string;
+    ttlSeconds?: number;
 }
 declare function signImpersonationToken(input: SignImpersonationTokenInput): Promise<string>;
 declare function verifyImpersonationToken(token: string, secret: string): Promise<ImpersonationClaims | null>;

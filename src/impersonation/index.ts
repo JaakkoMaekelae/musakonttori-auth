@@ -34,6 +34,7 @@ export interface SignImpersonationTokenInput {
   adminEmail: string;
   mode: ImpersonationMode;
   secret: string;
+  ttlSeconds?: number;
 }
 
 function encodeSecret(secret: string): Uint8Array {
@@ -53,7 +54,7 @@ export async function signImpersonationToken(
     .setIssuer(ISSUER)
     .setAudience(AUDIENCE)
     .setIssuedAt()
-    .setExpirationTime(`${TTL_SECONDS}s`)
+    .setExpirationTime(`${input.ttlSeconds ?? TTL_SECONDS}s`)
     .sign(encodeSecret(input.secret));
 }
 
