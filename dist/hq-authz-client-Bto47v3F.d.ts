@@ -1,4 +1,4 @@
-import { H as HqAuthzDecision } from './types-fioZbyQe.js';
+import { H as HqAuthzDecision } from './types-Ds9VA6-Y.js';
 
 interface CheckHqAuthzInput {
     clerkUserId: string;

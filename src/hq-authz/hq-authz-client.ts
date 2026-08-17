@@ -19,6 +19,7 @@ export interface CheckHqAuthzInput {
 interface HqAuthzWireResponse {
   allowed: boolean;
   permissions?: string[];
+  locale?: string | null;
   clerk_user_id?: string;
   product_slug?: string;
   role?: string | null;
@@ -115,6 +116,7 @@ export async function checkHqAuthz(
       allowed: wire.allowed,
       permissions: wire.permissions ?? [],
       reason: wire.reason,
+      locale: wire.locale ?? null,
     };
   } catch (err) {
     const reason = err instanceof Error && err.name === "TimeoutError" ? "hq_timeout" : "hq_unreachable";

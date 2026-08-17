@@ -112,7 +112,8 @@ async function checkHqAuthz(req) {
     return {
       allowed: wire.allowed,
       permissions: wire.permissions ?? [],
-      reason: wire.reason
+      reason: wire.reason,
+      locale: wire.locale ?? null
     };
   } catch (err) {
     const reason = err instanceof Error && err.name === "TimeoutError" ? "hq_timeout" : "hq_unreachable";
@@ -130,4 +131,4 @@ export {
   getHqClientSecret,
   checkHqAuthz
 };
-//# sourceMappingURL=chunk-K2TTETIH.js.map
+//# sourceMappingURL=chunk-S3LTKEPE.js.map

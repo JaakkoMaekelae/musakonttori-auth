@@ -1,5 +1,5 @@
-export { C as CheckHqAuthzInput, c as checkHqAuthz, g as getHqClientSecret } from '../hq-authz-client-DUoGCEEl.js';
-import '../types-fioZbyQe.js';
+export { C as CheckHqAuthzInput, c as checkHqAuthz, g as getHqClientSecret } from '../hq-authz-client-Bto47v3F.js';
+import '../types-Ds9VA6-Y.js';
 
 interface AdminAccessInput {
     clerkUserId: string;
@@ -12,6 +12,7 @@ interface AdminAccessDecision {
     isAdmin: boolean;
     permissions: string[];
     reason?: string;
+    locale?: string | null;
 }
 /**
  * Resolve whether an admin (Clerk identity) is allowed a given admin action.

@@ -45,6 +45,7 @@ export interface HqAuthzDecision {
   allowed: boolean;
   permissions: string[];
   reason?: string;
+  locale?: string | null;
 }
 
 export interface ApiKeyAuthResult {

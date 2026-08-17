@@ -1,7 +1,7 @@
 import {
   checkHqAuthz,
   getHqClientSecret
-} from "../chunk-K2TTETIH.js";
+} from "../chunk-S3LTKEPE.js";
 
 // src/admin/index.ts
 async function checkAdminAccess(input) {
@@ -15,7 +15,8 @@ async function checkAdminAccess(input) {
   return {
     isAdmin: decision.allowed,
     permissions: decision.permissions,
-    reason: decision.reason
+    reason: decision.reason,
+    locale: decision.locale
   };
 }
 export {

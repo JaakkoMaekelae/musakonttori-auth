@@ -15,6 +15,7 @@ export interface AdminAccessDecision {
   isAdmin: boolean;
   permissions: string[];
   reason?: string;
+  locale?: string | null;
 }
 
 /**
@@ -37,5 +38,6 @@ export async function checkAdminAccess(
     isAdmin: decision.allowed,
     permissions: decision.permissions,
     reason: decision.reason,
+    locale: decision.locale,
   };
 }

@@ -38,6 +38,7 @@ interface HqAuthzDecision {
     allowed: boolean;
     permissions: string[];
     reason?: string;
+    locale?: string | null;
 }
 interface ApiKeyAuthResult {
     valid: boolean;
