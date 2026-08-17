@@ -19,9 +19,18 @@ async function checkAdminAccess(input) {
     locale: decision.locale
   };
 }
+async function getAdminLocale(clerkUserId) {
+  const decision = await checkHqAuthz({
+    clerkUserId,
+    feature: "locale",
+    action: "read"
+  });
+  return decision.locale ?? null;
+}
 export {
   checkAdminAccess,
   checkHqAuthz,
+  getAdminLocale,
   getHqClientSecret
 };
 //# sourceMappingURL=index.js.map

@@ -41,3 +41,18 @@ export async function checkAdminAccess(
     locale: decision.locale,
   };
 }
+
+/**
+ * Fetch the default language (locale) for a Clerk admin user from HQ.
+ * Returns null for non-admins / unknown users.
+ */
+export async function getAdminLocale(
+  clerkUserId: string,
+): Promise<string | null> {
+  const decision = await checkHqAuthz({
+    clerkUserId,
+    feature: 'locale',
+    action: 'read',
+  });
+  return decision.locale ?? null;
+}

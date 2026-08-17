@@ -20,5 +20,10 @@ interface AdminAccessDecision {
  * derive admin rights from the accounts customer role.
  */
 declare function checkAdminAccess(input: AdminAccessInput): Promise<AdminAccessDecision>;
+/**
+ * Fetch the default language (locale) for a Clerk admin user from HQ.
+ * Returns null for non-admins / unknown users.
+ */
+declare function getAdminLocale(clerkUserId: string): Promise<string | null>;
 
-export { type AdminAccessDecision, type AdminAccessInput, checkAdminAccess };
+export { type AdminAccessDecision, type AdminAccessInput, checkAdminAccess, getAdminLocale };
