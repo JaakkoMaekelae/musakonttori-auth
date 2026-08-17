@@ -62,6 +62,7 @@ describe('getSession', () => {
       id: 'user_1',
       email: 'anna@musakonttori.fi',
       name: 'Anna Artist',
+      locale: null,
     });
     expect(session?.isImpersonating).toBe(false);
     expect(session?.activeWorkspaceId).toBeNull();

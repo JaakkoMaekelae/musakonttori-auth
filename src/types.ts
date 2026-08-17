@@ -15,6 +15,7 @@ export interface AuthUser {
   id: string;
   email: string;
   name: string | null;
+  locale: string | null;
 }
 
 export interface ProductRole {

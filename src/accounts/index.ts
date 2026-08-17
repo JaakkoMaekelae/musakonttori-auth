@@ -28,6 +28,7 @@ interface MeResponse {
   id: string;
   email: string;
   name: string | null;
+  locale?: string | null;
   memberships?: WorkspaceMembership[];
 }
 
@@ -98,7 +99,12 @@ export async function getSession(
       null;
 
     return {
-      user: { id: me.id, email: me.email, name: me.name ?? null },
+      user: {
+        id: me.id,
+        email: me.email,
+        name: me.name ?? null,
+        locale: me.locale ?? null,
+      },
       memberships,
       activeWorkspaceId,
       role: activeMembership?.role ?? null,
