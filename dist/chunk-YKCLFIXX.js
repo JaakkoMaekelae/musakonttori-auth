@@ -43,7 +43,12 @@ async function getSession(options = {}) {
     const activeWorkspaceId = impersonation?.workspaceId ?? activeWorkspaceCookieValue ?? memberships[0]?.workspaceId ?? null;
     const activeMembership = memberships.find((m) => m.workspaceId === activeWorkspaceId) ?? memberships[0] ?? null;
     return {
-      user: { id: me.id, email: me.email, name: me.name ?? null },
+      user: {
+        id: me.id,
+        email: me.email,
+        name: me.name ?? null,
+        locale: me.locale ?? null
+      },
       memberships,
       activeWorkspaceId,
       role: activeMembership?.role ?? null,
@@ -58,4 +63,4 @@ export {
   defaultServiceJwtProvider,
   getSession
 };
-//# sourceMappingURL=chunk-X6A35YYE.js.map
+//# sourceMappingURL=chunk-YKCLFIXX.js.map

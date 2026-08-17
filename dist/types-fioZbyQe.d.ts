@@ -12,6 +12,7 @@ interface AuthUser {
     id: string;
     email: string;
     name: string | null;
+    locale: string | null;
 }
 interface ProductRole {
     productId: string;

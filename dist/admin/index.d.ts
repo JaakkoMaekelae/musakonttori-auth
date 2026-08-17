@@ -1,5 +1,5 @@
-export { C as CheckHqAuthzInput, c as checkHqAuthz, g as getHqClientSecret } from '../hq-authz-client-XmzSD3Yw.js';
-import '../types-VQzFiU4K.js';
+export { C as CheckHqAuthzInput, c as checkHqAuthz, g as getHqClientSecret } from '../hq-authz-client-DUoGCEEl.js';
+import '../types-fioZbyQe.js';
 
 interface AdminAccessInput {
     clerkUserId: string;
