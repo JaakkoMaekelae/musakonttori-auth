@@ -10,7 +10,7 @@ interface CheckHqAuthzInput {
 declare function getHqClientSecret(clientId: string): string | undefined;
 declare function checkHqAuthz(req: CheckHqAuthzInput): Promise<HqAuthzDecision>;
 interface CheckCustomerAccessInput {
-    userId: string;
+    email: string;
     productSlug?: string;
 }
 interface CustomerAccessResult {

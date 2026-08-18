@@ -126,7 +126,7 @@ export async function checkHqAuthz(
 }
 
 export interface CheckCustomerAccessInput {
-  userId: string;
+  email: string;
   productSlug?: string;
 }
 
@@ -159,7 +159,7 @@ export async function checkCustomerAccess(
     return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason: "missing_hq_client_secret" };
   }
 
-  const path = `${HQ_CUSTOMER_ACCESS_PATH}?userId=${input.userId}&productSlug=${productSlug}`;
+  const path = `${HQ_CUSTOMER_ACCESS_PATH}?email=${input.email}&productSlug=${productSlug}`;
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const nonce = randomUUID();
   const signature = signHqAuthzRequest({
