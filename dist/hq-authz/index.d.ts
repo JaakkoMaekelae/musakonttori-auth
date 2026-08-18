@@ -1,4 +1,4 @@
-export { C as CheckHqAuthzInput, c as checkHqAuthz, g as getHqClientSecret } from '../hq-authz-client-Bto47v3F.js';
+export { C as CheckCustomerAccessInput, a as CheckHqAuthzInput, b as CustomerAccessResult, c as checkCustomerAccess, d as checkHqAuthz, g as getHqClientSecret } from '../hq-authz-client-BCoXgfno.js';
 import '../types-Ds9VA6-Y.js';
 
 declare const HQ_AUTHZ_REQUEST_PATH = "/api/internal/authz/check";

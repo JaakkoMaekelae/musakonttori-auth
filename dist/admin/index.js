@@ -1,7 +1,7 @@
 import {
   checkHqAuthz,
   getHqClientSecret
-} from "../chunk-S3LTKEPE.js";
+} from "../chunk-UJQK3NVS.js";
 
 // src/admin/index.ts
 async function checkAdminAccess(input) {

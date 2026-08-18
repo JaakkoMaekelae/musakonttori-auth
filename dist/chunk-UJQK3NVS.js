@@ -121,6 +121,56 @@ async function checkHqAuthz(req) {
     return { allowed: false, permissions: [], reason };
   }
 }
+var HQ_CUSTOMER_ACCESS_PATH = "/internal/customer-access";
+async function checkCustomerAccess(input) {
+  const productSlug = input.productSlug ?? process.env.PRODUCT_SLUG;
+  if (!productSlug) {
+    return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason: "missing_product_slug" };
+  }
+  const clientId = process.env.HQ_CLIENT_ID ?? "hq-primary";
+  const clientSecret = getHqClientSecret(clientId);
+  if (!clientSecret) {
+    return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason: "missing_hq_client_secret" };
+  }
+  const path = `${HQ_CUSTOMER_ACCESS_PATH}?userId=${input.userId}&productSlug=${productSlug}`;
+  const timestamp = Math.floor(Date.now() / 1e3).toString();
+  const nonce = randomUUID();
+  const signature = signHqAuthzRequest({
+    method: "GET",
+    path,
+    timestamp,
+    nonce,
+    body: "",
+    clientSecret
+  });
+  try {
+    const url = new URL(
+      `/api${path}`,
+      getHqBaseUrl()
+    ).toString();
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-HQ-Client-Id": clientId,
+        "X-HQ-Timestamp": timestamp,
+        "X-HQ-Nonce": nonce,
+        "X-HQ-Signature": signature
+      },
+      signal: AbortSignal.timeout(getHqTimeoutMs())
+    });
+    if (!res.ok) {
+      return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason: `hq_http_${res.status}` };
+    }
+    const wire = await res.json();
+    const banned = Boolean(wire.banned);
+    const orgOnHold = Boolean(wire.orgOnHold);
+    const blocked = Boolean(wire.blocked);
+    return { allowed: !banned && !orgOnHold && !blocked, banned, orgOnHold, blocked };
+  } catch (err) {
+    const reason = err instanceof Error && err.name === "TimeoutError" ? "hq_timeout" : "hq_unreachable";
+    return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason };
+  }
+}
 
 export {
   HQ_AUTHZ_REQUEST_PATH,
@@ -129,6 +179,7 @@ export {
   buildHqAuthzBody,
   signHqAuthzRequest,
   getHqClientSecret,
-  checkHqAuthz
+  checkHqAuthz,
+  checkCustomerAccess
 };
-//# sourceMappingURL=chunk-S3LTKEPE.js.map
+//# sourceMappingURL=chunk-UJQK3NVS.js.map

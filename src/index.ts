@@ -1,5 +1,5 @@
-export { checkHqAuthz, getHqClientSecret } from './hq-authz/hq-authz-client';
-export type { CheckHqAuthzInput } from './hq-authz/hq-authz-client';
+export { checkHqAuthz, checkCustomerAccess, getHqClientSecret } from './hq-authz/hq-authz-client';
+export type { CheckHqAuthzInput, CheckCustomerAccessInput, CustomerAccessResult } from './hq-authz/hq-authz-client';
 export {
   buildHqAuthzBody,
   HQ_AUTHZ_REQUEST_PATH,

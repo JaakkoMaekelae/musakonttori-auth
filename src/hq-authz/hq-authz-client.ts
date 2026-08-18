@@ -124,3 +124,80 @@ export async function checkHqAuthz(
     return { allowed: false, permissions: [], reason };
   }
 }
+
+export interface CheckCustomerAccessInput {
+  userId: string;
+  productSlug?: string;
+}
+
+export interface CustomerAccessResult {
+  allowed: boolean;
+  banned: boolean;
+  orgOnHold: boolean;
+  blocked: boolean;
+  reason?: string;
+}
+
+const HQ_CUSTOMER_ACCESS_PATH = "/internal/customer-access";
+
+/**
+ * Check a customer's moderation status against HQ (single source of truth):
+ * banned user, on-hold organization, or blocked product account. Mirrors
+ * checkHqAuthz — same HMAC signing, but a GET with an empty body.
+ */
+export async function checkCustomerAccess(
+  input: CheckCustomerAccessInput,
+): Promise<CustomerAccessResult> {
+  const productSlug = input.productSlug ?? process.env.PRODUCT_SLUG;
+  if (!productSlug) {
+    return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason: "missing_product_slug" };
+  }
+
+  const clientId = process.env.HQ_CLIENT_ID ?? "hq-primary";
+  const clientSecret = getHqClientSecret(clientId);
+  if (!clientSecret) {
+    return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason: "missing_hq_client_secret" };
+  }
+
+  const path = `${HQ_CUSTOMER_ACCESS_PATH}?userId=${input.userId}&productSlug=${productSlug}`;
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const nonce = randomUUID();
+  const signature = signHqAuthzRequest({
+    method: "GET",
+    path,
+    timestamp,
+    nonce,
+    body: "",
+    clientSecret,
+  });
+
+  try {
+    const url = new URL(
+      `/api${path}`,
+      getHqBaseUrl(),
+    ).toString();
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-HQ-Client-Id": clientId,
+        "X-HQ-Timestamp": timestamp,
+        "X-HQ-Nonce": nonce,
+        "X-HQ-Signature": signature,
+      },
+      signal: AbortSignal.timeout(getHqTimeoutMs()),
+    });
+
+    if (!res.ok) {
+      return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason: `hq_http_${res.status}` };
+    }
+
+    const wire = (await res.json()) as { banned: boolean; orgOnHold: boolean; blocked: boolean };
+    const banned = Boolean(wire.banned);
+    const orgOnHold = Boolean(wire.orgOnHold);
+    const blocked = Boolean(wire.blocked);
+    return { allowed: !banned && !orgOnHold && !blocked, banned, orgOnHold, blocked };
+  } catch (err) {
+    const reason = err instanceof Error && err.name === "TimeoutError" ? "hq_timeout" : "hq_unreachable";
+    return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason };
+  }
+}

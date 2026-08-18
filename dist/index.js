@@ -22,11 +22,12 @@ import {
   HQ_AUTHZ_REQUEST_PATH,
   HQ_AUTHZ_SIGNATURE_PATH,
   buildHqAuthzBody,
+  checkCustomerAccess,
   checkHqAuthz,
   getHqClientSecret,
   signHqAuthzRequest,
   splitPermission
-} from "./chunk-S3LTKEPE.js";
+} from "./chunk-UJQK3NVS.js";
 export {
   HQ_AUTHZ_REQUEST_PATH,
   HQ_AUTHZ_SIGNATURE_PATH,
@@ -36,6 +37,7 @@ export {
   IMPERSONATION_TARGET_COOKIE,
   IMPERSONATION_TARGET_EMAIL_COOKIE,
   buildHqAuthzBody,
+  checkCustomerAccess,
   checkHqAuthz,
   clearImpersonationCookies,
   defaultServiceJwtProvider,
