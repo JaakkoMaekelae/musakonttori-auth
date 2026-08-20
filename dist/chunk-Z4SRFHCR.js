@@ -42,6 +42,13 @@ ${bodyHash}`;
 import { randomUUID } from "crypto";
 var DEFAULT_HQ_BASE_URL = "https://hq.musakonttori.fi";
 var DEFAULT_TIMEOUT_MS = 1e4;
+var authzCache = /* @__PURE__ */ new Map();
+var customerAccessCache = /* @__PURE__ */ new Map();
+var AUTHZ_CACHE_TTL_MS = (() => {
+  const raw = Number(process.env.HQ_AUTHZ_CACHE_TTL_MS);
+  return Number.isFinite(raw) && raw > 0 ? raw : 6e4;
+})();
+var DANGEROUS_ACTIONS = /* @__PURE__ */ new Set(["write", "approve", "manage", "export"]);
 function getHqClientSecret(clientId) {
   const singleSecret = process.env.HQ_CLIENT_SECRET?.trim();
   if (singleSecret) return singleSecret;
@@ -66,6 +73,15 @@ async function checkHqAuthz(req) {
   const clientSecret = getHqClientSecret(clientId);
   if (!clientSecret) {
     return { allowed: false, permissions: [], reason: "missing_hq_client_secret" };
+  }
+  const action = req.action ?? "read";
+  const isDangerous = DANGEROUS_ACTIONS.has(action);
+  const cacheKey = `${clientId}:${req.clerkUserId}:${req.email ?? ""}:${productSlug}:${req.feature}:${action}`;
+  if (!isDangerous) {
+    const cached = authzCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.decision;
+    }
   }
   const url = new URL(HQ_AUTHZ_REQUEST_PATH, getHqBaseUrl()).toString();
   const body = buildHqAuthzBody({
@@ -109,17 +125,28 @@ async function checkHqAuthz(req) {
       return { allowed: false, permissions: [], reason: `hq_http_${res.status}` };
     }
     const wire = await res.json();
-    return {
+    const decision = {
       allowed: wire.allowed,
       permissions: wire.permissions ?? [],
       reason: wire.reason,
       locale: wire.locale ?? null
     };
+    if (!isDangerous) {
+      authzCache.set(cacheKey, {
+        decision,
+        expiresAt: Date.now() + AUTHZ_CACHE_TTL_MS
+      });
+    }
+    return decision;
   } catch (err) {
     const reason = err instanceof Error && err.name === "TimeoutError" ? "hq_timeout" : "hq_unreachable";
     console.error(`[hq-authz] request failed: ${reason}`, { feature: req.feature, action: req.action, err });
     return { allowed: false, permissions: [], reason };
   }
+}
+function clearHqAuthzCache() {
+  authzCache.clear();
+  customerAccessCache.clear();
 }
 var HQ_CUSTOMER_ACCESS_PATH = "/internal/customer-access";
 async function checkCustomerAccess(input) {
@@ -131,6 +158,11 @@ async function checkCustomerAccess(input) {
   const clientSecret = getHqClientSecret(clientId);
   if (!clientSecret) {
     return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason: "missing_hq_client_secret" };
+  }
+  const cacheKey = `${clientId}:${input.email}:${productSlug}`;
+  const cached = customerAccessCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.result;
   }
   const path = `${HQ_CUSTOMER_ACCESS_PATH}?email=${input.email}&productSlug=${productSlug}`;
   const timestamp = Math.floor(Date.now() / 1e3).toString();
@@ -165,7 +197,17 @@ async function checkCustomerAccess(input) {
     const banned = Boolean(wire.banned);
     const orgOnHold = Boolean(wire.orgOnHold);
     const blocked = Boolean(wire.blocked);
-    return { allowed: !banned && !orgOnHold && !blocked, banned, orgOnHold, blocked };
+    const result = {
+      allowed: !banned && !orgOnHold && !blocked,
+      banned,
+      orgOnHold,
+      blocked
+    };
+    customerAccessCache.set(cacheKey, {
+      result,
+      expiresAt: Date.now() + AUTHZ_CACHE_TTL_MS
+    });
+    return result;
   } catch (err) {
     const reason = err instanceof Error && err.name === "TimeoutError" ? "hq_timeout" : "hq_unreachable";
     return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason };
@@ -180,6 +222,7 @@ export {
   signHqAuthzRequest,
   getHqClientSecret,
   checkHqAuthz,
+  clearHqAuthzCache,
   checkCustomerAccess
 };
-//# sourceMappingURL=chunk-HIKLA6SV.js.map
+//# sourceMappingURL=chunk-Z4SRFHCR.js.map

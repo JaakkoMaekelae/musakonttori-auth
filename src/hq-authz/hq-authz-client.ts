@@ -29,6 +29,31 @@ interface HqAuthzWireResponse {
 const DEFAULT_HQ_BASE_URL = "https://hq.musakonttori.fi";
 const DEFAULT_TIMEOUT_MS = 10000;
 
+interface HqAuthzCacheEntry {
+  decision: HqAuthzDecision;
+  expiresAt: number;
+}
+
+const authzCache = new Map<string, HqAuthzCacheEntry>();
+
+interface CustomerAccessCacheEntry {
+  result: CustomerAccessResult;
+  expiresAt: number;
+}
+
+const customerAccessCache = new Map<string, CustomerAccessCacheEntry>();
+
+// Permissions are read far more often than they change. Cache successful HQ
+// decisions for a short TTL so per-page-load checks don't re-hit the HQ HTTP
+// endpoint (musakonttori-hq cold starts + network regularly take 3-5s).
+// Dangerous actions are never cached — revocations there must apply immediately.
+const AUTHZ_CACHE_TTL_MS = (() => {
+  const raw = Number(process.env.HQ_AUTHZ_CACHE_TTL_MS);
+  return Number.isFinite(raw) && raw > 0 ? raw : 60_000;
+})();
+
+const DANGEROUS_ACTIONS = new Set(["write", "approve", "manage", "export"]);
+
 export function getHqClientSecret(clientId: string): string | undefined {
   const singleSecret = process.env.HQ_CLIENT_SECRET?.trim();
   if (singleSecret) return singleSecret;
@@ -65,6 +90,17 @@ export async function checkHqAuthz(
   const clientSecret = getHqClientSecret(clientId);
   if (!clientSecret) {
     return { allowed: false, permissions: [], reason: "missing_hq_client_secret" };
+  }
+
+  const action = req.action ?? "read";
+  const isDangerous = DANGEROUS_ACTIONS.has(action);
+  const cacheKey = `${clientId}:${req.clerkUserId}:${req.email ?? ""}:${productSlug}:${req.feature}:${action}`;
+
+  if (!isDangerous) {
+    const cached = authzCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.decision;
+    }
   }
 
   const url = new URL(HQ_AUTHZ_REQUEST_PATH, getHqBaseUrl()).toString();
@@ -112,17 +148,33 @@ export async function checkHqAuthz(
     }
 
     const wire = (await res.json()) as HqAuthzWireResponse;
-    return {
+    const decision: HqAuthzDecision = {
       allowed: wire.allowed,
       permissions: wire.permissions ?? [],
       reason: wire.reason,
       locale: wire.locale ?? null,
     };
+
+    if (!isDangerous) {
+      authzCache.set(cacheKey, {
+        decision,
+        expiresAt: Date.now() + AUTHZ_CACHE_TTL_MS,
+      });
+    }
+
+    return decision;
   } catch (err) {
     const reason = err instanceof Error && err.name === "TimeoutError" ? "hq_timeout" : "hq_unreachable";
     console.error(`[hq-authz] request failed: ${reason}`, { feature: req.feature, action: req.action, err });
     return { allowed: false, permissions: [], reason };
   }
+}
+
+// Manual invalidation hook — call after an HQ-side permission change when the
+// next 60s of stale cache would be unacceptable.
+export function clearHqAuthzCache(): void {
+  authzCache.clear();
+  customerAccessCache.clear();
 }
 
 export interface CheckCustomerAccessInput {
@@ -157,6 +209,12 @@ export async function checkCustomerAccess(
   const clientSecret = getHqClientSecret(clientId);
   if (!clientSecret) {
     return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason: "missing_hq_client_secret" };
+  }
+
+  const cacheKey = `${clientId}:${input.email}:${productSlug}`;
+  const cached = customerAccessCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.result;
   }
 
   const path = `${HQ_CUSTOMER_ACCESS_PATH}?email=${input.email}&productSlug=${productSlug}`;
@@ -195,7 +253,17 @@ export async function checkCustomerAccess(
     const banned = Boolean(wire.banned);
     const orgOnHold = Boolean(wire.orgOnHold);
     const blocked = Boolean(wire.blocked);
-    return { allowed: !banned && !orgOnHold && !blocked, banned, orgOnHold, blocked };
+    const result: CustomerAccessResult = {
+      allowed: !banned && !orgOnHold && !blocked,
+      banned,
+      orgOnHold,
+      blocked,
+    };
+    customerAccessCache.set(cacheKey, {
+      result,
+      expiresAt: Date.now() + AUTHZ_CACHE_TTL_MS,
+    });
+    return result;
   } catch (err) {
     const reason = err instanceof Error && err.name === "TimeoutError" ? "hq_timeout" : "hq_unreachable";
     return { allowed: false, banned: false, orgOnHold: false, blocked: false, reason };

@@ -9,6 +9,7 @@ interface CheckHqAuthzInput {
 }
 declare function getHqClientSecret(clientId: string): string | undefined;
 declare function checkHqAuthz(req: CheckHqAuthzInput): Promise<HqAuthzDecision>;
+declare function clearHqAuthzCache(): void;
 interface CheckCustomerAccessInput {
     email: string;
     productSlug?: string;
@@ -27,4 +28,4 @@ interface CustomerAccessResult {
  */
 declare function checkCustomerAccess(input: CheckCustomerAccessInput): Promise<CustomerAccessResult>;
 
-export { type CheckCustomerAccessInput as C, type CheckHqAuthzInput as a, type CustomerAccessResult as b, checkCustomerAccess as c, checkHqAuthz as d, getHqClientSecret as g };
+export { type CheckCustomerAccessInput as C, type CheckHqAuthzInput as a, type CustomerAccessResult as b, checkCustomerAccess as c, checkHqAuthz as d, clearHqAuthzCache as e, getHqClientSecret as g };

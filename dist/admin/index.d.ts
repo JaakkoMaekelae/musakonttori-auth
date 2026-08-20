@@ -1,4 +1,4 @@
-export { a as CheckHqAuthzInput, d as checkHqAuthz, g as getHqClientSecret } from '../hq-authz-client-DozmUbot.js';
+export { a as CheckHqAuthzInput, d as checkHqAuthz, g as getHqClientSecret } from '../hq-authz-client-z_zTeUOa.js';
 import '../types-Ds9VA6-Y.js';
 
 interface AdminAccessInput {

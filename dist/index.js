@@ -27,7 +27,7 @@ import {
   getHqClientSecret,
   signHqAuthzRequest,
   splitPermission
-} from "./chunk-HIKLA6SV.js";
+} from "./chunk-Z4SRFHCR.js";
 export {
   HQ_AUTHZ_REQUEST_PATH,
   HQ_AUTHZ_SIGNATURE_PATH,
